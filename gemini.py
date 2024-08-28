@@ -46,85 +46,63 @@ class Gemini:
             return trip_dict
     
     def get_response(self, markdown=True):
-        # Buat prompt untuk rencana perjalanan
+        # Mulai dengan pembuka yang ramah
         prompt = f"""
-        🌟 **Create an Unforgettable Itinerary for a Visit to {self.city}, {self.country}!** 🌟
+        🌟 **Siapkan Rencana Liburan yang Tak Terlupakan ke {self.city}, {self.country}!** 🌟
 
-        Your mission is to craft a detailed and engaging trip plan that spans {self.days} days for a lively group of {self.members} people. We want to experience a perfect blend of:
-        - 🏛️ **Historical Sightseeing**
-        - 🎨 **Cultural Wonders**
-        - 🍽️ **Gastronomic Delights**
+        Halo! Kamu ditantang untuk membuat rencana perjalanan seru selama {self.days} hari untuk grup keren berjumlah {self.members} orang. Nah, kami ini ingin menikmati campuran yang sempurna dari:
+        - 🏛️ **Jelajah Sejarah** (karena kita kan nggak mau dikira kurang gaul sama nenek moyang 🤭)
+        - 🎨 **Keajaiban Budaya** (biar feed Instagram kita nggak kalah artsy sama influencer)
+        - 🍽️ **Kenikmatan Kuliner** (perut kenyang, hati senang!)
 
-        Here’s what we’re looking for:
+        Gimana? Siap kan? Yuk, kita mulai!
 
-        **Day 1:**
-        - **Morning:** Start the day with excitement! 🚶‍♂️ Suggest two must-see spots or activities that will kick off our adventure.
-        - **Afternoon:** Dive into the heart of the city! 🌆 Recommend interesting places to explore, enjoy a fantastic lunch, or immerse in local culture.
-        - **Evening:** End the day with a bang! 🌟 Provide ideas for a delightful dinner and any exciting evening activities to make our night memorable.
-
-        **Day 2:**
-        - **Morning:** Wake up to new experiences! ☕ Share two activities or sites that will make the start of our day unforgettable.
-        - **Afternoon:** Explore more wonders! 🏞️ Suggest places to visit, cultural experiences to enjoy, or unique dining spots for lunch.
-        - **Evening:** Wrap up with style! 🍷 Recommend a great place for dinner and any fun evening events or spots to wind down.
-
-        **Day 3:**
-        - **Morning:** Begin the day with adventure! 🌄 Provide two engaging activities or locations to start the day off right.
-        - **Afternoon:** Make the most of our time! 🛍️ Suggest interesting places to explore or fantastic food spots for lunch.
-        - **Evening:** Conclude with a memorable experience! 🎉 Recommend a special dinner venue and any evening entertainment to end our trip on a high note.
-
-        🌟 **Remember:** Exclude any pricing or cost details. Format your response as follows:
-
-        **Day 1:**
-        **Morning:**
-        
-        - Activity 1
-        - Activity 2
-
-        **Afternoon:**
-        
-        - Activity 1
-        - Activity 2
-
-        **Evening:**
-        
-        - Activity 1
-        - Activity 2
-
-        **Day 2:**
-        **Morning:**
-        
-        - Activity 1
-        - Activity 2
-
-        **Afternoon:**
-        
-        - Activity 1
-        - Activity 2
-
-        **Evening:**
-        
-        - Activity 1
-        - Activity 2
-
-        **Day 3:**
-        **Morning:**
-        
-        - Activity 1
-        - Activity 2
-
-        **Afternoon:**
-        
-        - Activity 1
-        - Activity 2
-
-        **Evening:**
-        
-        - Activity 1
-        - Activity 2
-
-        ✨ Make sure to craft each day with excitement and charm! Ensure your output is UTF-8 encoded. Also please give the enjoy answer and add the emoticon also
         """
 
+        # Loop untuk tiap hari
+        for day in range(1, self.days + 1):
+            prompt += f"""
+            **Hari {day}:**
+            - **Pagi:** Yuk, bangun dan mulai hari dengan semangat! 🚶‍♂️ Rekomendasiin dong dua tempat atau aktivitas seru buat memulai petualangan kita. Kalau bisa yang bikin langsung lupa kangen sama kasur! 😴
+            - **Siang:** Perut mulai keroncongan? Nah, waktu yang pas buat menjelajah lebih dalam kota ini! 🌆 Kasih tau tempat menarik untuk dijelajahi, makan siang yang maknyus, atau mungkin spot budaya lokal yang bikin kita merasa jadi warga setempat (kira-kira).
+            - **Malam:** Setelah seharian jalan-jalan, jangan lupa malamnya juga harus berkesan! 🌟 Rekomendasikan ide makan malam yang asyik dan kegiatan malam seru buat bikin malam ini nggak terlupakan. Kalau bisa, yang bikin kita pengen cerita ke semua orang besoknya! 😄
+            """
+
+        # Akhiri prompt dengan contoh format tanggapan
+        prompt += """
+        Oh iya, ada sedikit tips nih: Jangan masukin info soal harga ya. Kita kan pengen fokus nikmatin liburan, bukan ngitung-ngitung biaya! 😅
+
+        Yuk, format tanggapannya kayak gini, biar rapi dan jelas:
+
+        """
+        
+        # Format respons per hari
+        for day in range(1, self.days + 1):
+            prompt += f"""
+            **Hari {day}:**
+            **Pagi:**
+            
+            - Aktivitas 1
+            - Aktivitas 2
+
+            **Siang:**
+            
+            - Aktivitas 1
+            - Aktivitas 2
+
+            **Malam:**
+            
+            - Aktivitas 1
+            - Aktivitas 2
+            """
+
+        # Penutup yang ramah dan penuh energi
+        prompt += """
+        ✨ Ingat ya, buat rencananya semenarik mungkin! Liburan ini harus penuh tawa, pengalaman seru, dan tentu saja... kenangan yang tak terlupakan! Jangan lupa kasih banyak emotikon biar makin seru! 😎✨
+
+        Happy planning, dan semoga itinerary ini bikin kita semua nggak sabar buat berangkat!
+        """
+        
         # Hasilkan konten menggunakan model
         response = self.model.generate_content(prompt)
         if response.parts:
