@@ -5,12 +5,12 @@ import json
 from gemini import Gemini
 import spacy
 
-# Set up the API key and NLP model
+# Setel API key dan model NLP
 api_key = os.getenv("AIzaSyAwnWCj9gkgGN9v397HROgWlLzU_7M6ms0") or "AIzaSyAwnWCj9gkgGN9v397HROgWlLzU_7M6ms0"
-genai.configure(api_key=api_key)  # Replace with your actual API key
+genai.configure(api_key=api_key)  # Ganti dengan API key yang sesuai
 # nlp = spacy.load("en_core_web_sm")
 
-# Initialize session states
+# Inisialisasi session states
 if 'counter' not in st.session_state:
     st.session_state['counter'] = 0
 if 'generate_button_clicked' not in st.session_state:
@@ -20,23 +20,23 @@ if 'model' not in st.session_state:
 if 'response' not in st.session_state:
     st.session_state["response"] = {}
 
-# Main function to run the app
+# Fungsi utama untuk menjalankan aplikasi
 def main():
     session_state = st.session_state
 
-    # Title and layout
+    # Judul dan tata letak
     st.markdown(
         """
         <style>
         .title {
             text-align: center;
-            color: #1E90FF; /* DodgerBlue for a fresh look */
+            color: #1E90FF; /* DodgerBlue untuk tampilan segar */
             font-size: 3rem;
             font-weight: bold;
         }
         .subtitle {
             text-align: center;
-            color: #32CD32; /* LimeGreen for a vibrant feel */
+            color: #32CD32; /* LimeGreen untuk kesan cerah */
             font-size: 1.5rem;
         }
         .image {
@@ -61,7 +61,7 @@ def main():
             font-size: 16px;
         }
         .button:hover {
-            background-color: #228B22; /* Darker green for hover effect */
+            background-color: #228B22; /* Warna hijau lebih gelap untuk efek hover */
         }
         .container {
             padding: 20px;
@@ -74,24 +74,24 @@ def main():
             <h3>Rencanakan perjalanan yang tak terlupakan dengan Travel Planner</h3>
         </div>
         <img src='https://i.pinimg.com/originals/20/cb/f3/20cbf31ecf279ccab1a3264a2cec80c6.jpg' 
-             alt='Travel Image' class='image'>
+             alt='Gambar Perjalanan' class='image'>
         """, 
         unsafe_allow_html=True
     )
     st.markdown("---")
 
-    st.sidebar.header("📋 **Trip Details**")
+    st.sidebar.header("📋 **Detail Perjalanan**")
 
-    # Sidebar inputs for trip details
+    # Input sidebar untuk detail perjalanan
     with st.sidebar.form("trip_form"):
-        country = st.text_input("🌍 Enter the country", "Russia")
-        city = st.text_input("🏙️ Enter the city", "Moscow")
-        days = st.number_input("📅 For how many days?", min_value=1, value=3)
-        members = st.number_input("👥 How big is your group?", min_value=1, value=1)
-        generate_plan = st.form_submit_button("Generate Trip Plan 🗺️")
+        country = st.text_input("🌍 Masukkan negara", "Rusia")
+        city = st.text_input("🏙️ Masukkan kota", "Moskow")
+        days = st.number_input("📅 Untuk berapa hari?", min_value=1, value=3)
+        members = st.number_input("👥 Berapa anggota grup?", min_value=1, value=1)
+        generate_plan = st.form_submit_button("Buat Rencana Perjalanan 🗺️")
 
     if generate_plan:
-        # Reset the counter and response when a new trip plan is generated
+        # Reset counter dan response ketika rencana baru dihasilkan
         st.session_state['counter'] = 0
         model = Gemini(city, country, days, members)
         model.get_response(markdown=False)
@@ -102,7 +102,7 @@ def main():
             with open(r'./gemini_answer.json', 'r', encoding="utf-8") as file:
                 st.session_state["response"] = json.load(file)
         except FileNotFoundError:
-            st.error("Response file not found. Please ensure the correct path and file name.")
+            st.error("File respons tidak ditemukan. Pastikan path dan nama file sudah benar.")
 
     st.markdown("---")
     
@@ -110,7 +110,7 @@ def main():
     
     with col2:
         response = st.session_state.get("response", {})
-        current_day = f"Day {st.session_state['counter'] + 1}"
+        current_day = f"Hari {st.session_state['counter'] + 1}"
         st.markdown(f"<h3 class='day-header'>{current_day} 📅</h3>", unsafe_allow_html=True)
 
         model = st.session_state.get("model")
@@ -122,21 +122,21 @@ def main():
                 info = "".join([f"**{key}**: {value}\n" for key, value in response[current_day].items()])
                 current_day_infos.write(model.to_markdown(info))
             else:
-                current_day_infos.write("Generate a Trip Plan to see the details here! ✨")
+                current_day_infos.write("Buat Rencana Perjalanan untuk melihat detail di sini! ✨")
 
         st.markdown("---")
         
-        if st.button("Next Day ➡️", help="Click to view the plan for the next day."):
+        if st.button("Hari Selanjutnya ➡️", help="Klik untuk melihat rencana hari berikutnya."):
             if st.session_state['counter'] < len(response) - 1:
                 st.session_state['counter'] += 1
-                current_day = f"Day {st.session_state['counter'] + 1}"
+                current_day = f"Hari {st.session_state['counter'] + 1}"
                 if current_day in response:
                     current_day_infos.empty()
                     info = "".join([f"**{key}**: {value.strip()}\n" for key, value in response[current_day].items()])
                     current_day_infos.write(model.to_markdown(info))
                 else:
                     current_day_infos.empty()
-                    current_day_infos.write("No information available for this day. 🛑")
+                    current_day_infos.write("Tidak ada informasi untuk hari ini. 🛑")
 
 if __name__ == '__main__':
     main()

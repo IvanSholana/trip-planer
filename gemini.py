@@ -17,28 +17,33 @@ class Gemini:
     @staticmethod    
     def to_markdown(text):
         # Perbaiki format dari teks menjadi markdown
-        text = text.replace('*Morning:*', '**Morning:**')
-        text = text.replace('*Afternoon:*', '**Afternoon:**')
-        text = text.replace('*Evening:*', '**Evening:**')
+        text = text.replace('*Morning:*', '**Pagi:**')
+        text = text.replace('*Afternoon:*', '**Siang:**')
+        text = text.replace('*Evening:*', '**Malam:**')
         text = text.replace(':: -', '* -')  # Menyederhanakan bullet points dan format
-        text = text.replace('\n*', '\n\n*')  # Menambahkan baris baru sebelum bullet points
+        text = text.replace('\n*', '\n\n*')  # Menambahkan baris baru sebelum bullet 
+        
+        print(text)
         return text.strip()
 
     def parse_trip_plan(self, trip_plan, return_=True):
         # Pisahkan rencana perjalanan berdasarkan hari dan ambil detailnya
-        days = trip_plan.split("**Day ")[1:]  # Pisahkan rencana perjalanan berdasarkan "**Day " dan hapus string kosong pertama
+        days = trip_plan.split("**Hari ")[1:]  # Pisahkan rencana perjalanan berdasarkan "**Hari " dan hapus string kosong pertama
         trip_dict = {}
         for i, day in enumerate(days, start=1):
-            day_num = f"Day {i}"
-            parts = day.split("**Morning:**")
-            morning = parts[1].split("**Afternoon:**")[0].strip()
-            afternoon = parts[1].split("**Afternoon:**")[1].split("**Evening:**")[0].strip()
-            evening = parts[1].split("**Evening:**")[1].strip()
-            trip_dict[day_num] = {
-                "*Morning*": f"\n \n{morning}\n",
-                "*Afternoon*": f"\n \n{afternoon}\n",
-                "*Evening*": f"\n \n{evening}\n"
-            }
+            day_num = f"Hari {i}"
+            try:
+                parts = day.split("**Pagi:**")
+                pagi = parts[1].split("**Siang:**")[0].strip()
+                siang = parts[1].split("**Siang:**")[1].split("**Malam:**")[0].strip()
+                malam = parts[1].split("**Malam:**")[1].strip()
+                trip_dict[day_num] = {
+                    "Pagi": pagi,
+                    "Siang": siang,
+                    "Malam": malam
+                }
+            except IndexError:
+                print(f"Peringatan: Hari {i} memiliki rencana yang tidak lengkap. Melewatkan.")
         # Simpan rencana perjalanan yang diparsing ke dalam file JSON
         with open("gemini_answer.json", "w") as json_file:
             json.dump(trip_dict, json_file, indent=4)
@@ -82,15 +87,18 @@ class Gemini:
             **Hari {day}:**
             **Pagi:**
             
+            
             - Aktivitas 1
             - Aktivitas 2
 
             **Siang:**
             
+            
             - Aktivitas 1
             - Aktivitas 2
 
             **Malam:**
+            
             
             - Aktivitas 1
             - Aktivitas 2
@@ -102,9 +110,12 @@ class Gemini:
 
         Happy planning, dan semoga itinerary ini bikin kita semua nggak sabar buat berangkat!
         """
-        
+
         # Hasilkan konten menggunakan model
         response = self.model.generate_content(prompt)
+        
+        print(response)
+        
         if response.parts:
             response = response.parts[0].text
         
@@ -114,4 +125,3 @@ class Gemini:
         else:
             response = self.parse_trip_plan(response)
         return response
-
